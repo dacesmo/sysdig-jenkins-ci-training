@@ -16,8 +16,8 @@ pipeline {
         }
         stage('Clone repo'){  // clone repo
             steps{
-                git branch: "${git_branch}",
-                    url: "${git_repository}"
+                sh "git clone ${git_repository} ."
+                sh "git checkout ${git_branch}"
             }
         }
         /*stage('Lint Docker'){  // This step is recommended to ensure images LABELS standardization
