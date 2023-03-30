@@ -1,8 +1,8 @@
 pipeline {
     agent any
     parameters {
-        string(name: "repository", defaultValue: "https://github.com/dacesmo/santander-training.git", trim: true, description: "Git Repo to build Dockerfile from")
-        string(name: "branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
+        string(name: "git_repository", defaultValue: "https://github.com/dacesmo/santander-training.git", trim: true, description: "Git Repo to build Dockerfile from")
+        string(name: "git_branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
         string(name: "docker_tag", defaultValue: "myapp:v1.0.1", trim: true, description: "Docker Image Tag")
         string(name: "sysdig_url", defaultValue: "https://us2.app.sysdig.com", trim: true, description: "Sysdig URL based on Sysdig SaaS region")
         string(name: "registry_url", defaultValue: "ghcr.io/dacesmo", trim: true, description: "Container Registry URL")
@@ -15,8 +15,8 @@ pipeline {
         }
         stage('Clone repo'){  // clone repo
             steps{
-                git branch: "${branch}",
-                    url: "${repository}"
+                git branch: "${git_branch}",
+                    url: "${git_repository}"
                 sh 'uname -a'
             }
         }
