@@ -6,6 +6,7 @@ pipeline {
         string(name: "docker_tag", defaultValue: "myapp:v1.0.1", trim: true, description: "Docker Image Tag")
         string(name: "sysdig_url", defaultValue: "https://us2.app.sysdig.com", trim: true, description: "Sysdig URL based on Sysdig SaaS region")
         string(name: "registry_url", defaultValue: "ghcr.io/dacesmo", trim: true, description: "Container Registry URL")
+        string(name: "sysdig_args", defaultValue: "", trim: true, description: "Optional args for Sysdig CLI Scanner")
     }
     stages {
         stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
@@ -38,8 +39,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
                     sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
                     sh 'chmod +x ./sysdig-cli-scanner'
-                    sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} jenkins-pipeline/${docker_tag}"
-                    //sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} --policy my-demo-policy jenkins-pipeline/${docker_tag}"
+                    sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_args} jenkins-pipeline/${docker_tag}"
                 }
             }
         }
