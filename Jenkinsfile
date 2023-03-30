@@ -11,6 +11,7 @@ pipeline {
         stage('Clean Workspace') {  // clean the workspace to avoid old files conflicts
             steps {
                 cleanWs()
+                sh 'rm -rf .git'
             }
         }
         stage('Clone repo'){  // clone repo
