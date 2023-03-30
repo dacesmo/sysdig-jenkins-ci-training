@@ -17,10 +17,9 @@ pipeline {
             steps{
                 git branch: "${git_branch}",
                     url: "${git_repository}"
-                sh 'uname -a'
             }
         }
-        /*stage('Lint Docker'){  // This step is recommended to ensure images standardization
+        /*stage('Lint Docker'){  // This step is recommended to ensure images LABELS standardization
             steps{
                 sh "apt install -y wget"
                 sh "wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-arm64"
@@ -30,7 +29,6 @@ pipeline {
         }*/
         stage('Build image'){  // Build the image from a Dockerfile
             steps{
-                sh "ls -la"
                 sh "docker image build --tag jenkins-pipeline/${docker_tag}  --label 'org.opencontainers.image.source=https://github.com/dacesmo/santander-training' . # --label 'stage=PROD'"
             }
         }
