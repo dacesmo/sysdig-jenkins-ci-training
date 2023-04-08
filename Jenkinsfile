@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {  // Defines Parameters as Code
-        string(name: "git_repository", defaultValue: "https://github.com/dacesmo/santander-training.git", trim: true, description: "Git Repo to build Dockerfile from")
+        string(name: "git_repository", defaultValue: "https://github.com/dacesmo/sysdig-jenkins-ci-training.git", trim: true, description: "Git Repo to build Dockerfile from")
         string(name: "git_branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
         string(name: "docker_tag", defaultValue: "myapp:v1.0.1", trim: true, description: "Docker Image Tag")
         string(name: "registry_url", defaultValue: "ghcr.io/dacesmo", trim: true, description: "Container Registry URL")
