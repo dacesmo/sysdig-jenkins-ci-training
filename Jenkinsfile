@@ -36,30 +36,30 @@ pipeline {
         stage('Sysdig Vulnerability Scan'){
             parallel{
                 stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
-                    script {
-                        if(!env.sysdig_plugin){    
-                            steps{
-                                withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
+                     steps{
+                         script {
+                             if(!env.sysdig_plugin){    
+                                 withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
                                     sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
                                     sh 'chmod +x ./sysdig-cli-scanner'
                                     sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} jenkins-pipeline/${docker_tag}"
-                                }
-                            }
-                        }
-                        else{
-                            echo 'Using Plugin Scan'
-                        }
-                    }
+                                 }
+                             }
+                             else{
+                                echo 'Using Plugin Scan'
+                             }
+                         }
+                     }
                 }
                 stage('Plugin Scan'){
-                    script{
-                        if(env.sysdig_plugin){
-                            steps{
+                    steps{
+                        script{
+                            if(env.sysdig_plugin){
                                 sysdigImageScan engineCredentialsId: 'sysdig_secure_api_token', imageName: "jenkins-pipeline/${params.docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: ${params.bail_on_fail}, bailOnPluginFail: ${params.bail_on_plugin_fail}
                             }
-                        }
-                        else{
-                            echo 'Using CLI Scan'
+                            else{
+                                echo 'Using CLI Scan'
+                            }
                         }
                     }
                 }
