@@ -4,7 +4,8 @@ pipeline {
         string(name: "git_repository", defaultValue: "https://github.com/dacesmo/sysdig-jenkins-ci-training.git", trim: true, description: "Git Repo to build Dockerfile from")
         string(name: "git_branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
         string(name: "docker_tag", defaultValue: "myapp:v1.0.1", trim: true, description: "Docker Image Tag")
-        string(name: "registry_url", defaultValue: "ghcr.io/dacesmo", trim: true, description: "Container Registry URL")
+        string(name: "registry_url", defaultValue: "ssworkshop.jfrog.io", trim: true, description: "Container Registry URL")
+        string(name: "registry_repo", defaultValue: "artifactory/docker", trim: true, description: "Container Registry URL")
         string(name: "sysdig_url", defaultValue: "https://us2.app.sysdig.com", trim: true, description: "Sysdig URL based on Sysdig SaaS region")
         booleanParam(name: 'sysdig_plugin', defaultValue: true, description: 'Want to use Sysdig Jenkins Plugin? (Else, cli scanned will be performed)')
         string(name: "plugin_policies_to_apply", defaultValue: "", description: "Space separated list of policies to apply (Plugin execution only)")
@@ -27,7 +28,7 @@ pipeline {
         }
         stage('Build image'){  // Builds the image from a Dockerfile
             steps{
-                sh "docker image build --tag jenkins-pipeline/${docker_tag}  --label 'org.opencontainers.image.source=https://github.com/dacesmo/sysdig-jenkins-ci-training' . # --label 'stage=PROD'"
+                sh "docker image build --tag ${registry_url}/${registry_repo}/${docker_tag}  --label 'stage=TRAINING' .
             }
         }
         stage('Sysdig Vulnerability Scan'){
@@ -64,14 +65,14 @@ pipeline {
         }
         stage('Tag Docker Image'){  // Tags the image to be pushed to the Container Registry
             steps{
-                sh 'docker tag jenkins-pipeline/${docker_tag} ${registry_url}/${docker_tag}'
+                sh 'docker tag jenkins-pipeline/${docker_tag} ${registry_url}/${registry_repo}/${docker_tag}'
             }
         }
         stage('Push Docker Image'){  // Pushes the images to the Container Registry
             steps{
                 withCredentials([usernamePassword(credentialsId: 'gh_cr_token', usernameVariable: 'username', passwordVariable: 'password')]) {
-                    sh 'echo ${password} | docker login ghcr.io -u ${username} --password-stdin'
-                    sh 'docker push ${registry_url}/${docker_tag}'
+                    sh 'echo ${password} | docker login ${registry_url} -u ${username} --password-stdin'
+                    sh 'docker push ${registry_url}/${registry_repo}/${docker_tag}'
                 }
             }
         }
