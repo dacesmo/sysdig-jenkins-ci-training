@@ -9,7 +9,7 @@ pipeline {
         string(name: "sysdig_cli_args", defaultValue: "", trim: true, description: "Optional args for Sysdig CLI Scanner")
         string(name: "plugin_policies_to_apply", defaultValue: "", description: "List of policies to apply (Plugin execution only)")
         booleanParam(name: 'sysdig_plugin', defaultValue: true, description: 'Want to use Sysdig Plugin? (Plugin execution only)')
-        booleanParam(name: 'bail_on_plugin', defaultValue: true, description: 'Want Sysdig to Bail on Fail? (Plugin execution only)')
+        booleanParam(name: 'bail_on_fail', defaultValue: true, description: 'Want Sysdig to Bail on Fail? (Plugin execution only)')
         booleanParam(name: 'bail_on_plugin_fail', defaultValue: true, description: 'Want Sysdig to Bail on Plugin Fail? (Plugin execution only)')
         
         
