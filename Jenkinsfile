@@ -63,11 +63,6 @@ pipeline {
                 }
             }
         }
-        stage('Tag Docker Image'){  // Tags the image to be pushed to the Container Registry
-            steps{
-                sh 'docker tag jenkins-pipeline/${docker_tag} ${registry_url}/${registry_repo}/${docker_tag}'
-            }
-        }
         stage('Push Docker Image'){  // Pushes the images to the Container Registry
             steps{
                 withCredentials([usernamePassword(credentialsId: 'jfrog-registry-credentials', usernameVariable: 'username', passwordVariable: 'password')]) {
