@@ -34,8 +34,8 @@ pipeline {
             }
         }
         stage('Sysdig Vulnerability Scan CLI'){  // Scans the built image using Sysdig inline scanner
-            steps{
-                if(!env.sysdig_plugin){
+            if(!env.sysdig_plugin){    
+                steps{
                     withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
                         sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
                         sh 'chmod +x ./sysdig-cli-scanner'
@@ -45,8 +45,8 @@ pipeline {
             }
         }
         stage('Sysdig Vulnerability Scan Plugin'){
-            steps{
-                if(env.sysdig_plugin){
+            if(env.sysdig_plugin){
+                steps{
                     sysdigImageScan engineCredentialsId: 'sysdig_secure_api_token', imageName: "jenkins-pipeline/${params.docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: ${params.bail_on_fail}, bailOnPluginFail: ${params.bail_on_plugin_fail}
                 }
             }
