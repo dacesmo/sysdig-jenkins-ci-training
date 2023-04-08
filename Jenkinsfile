@@ -6,7 +6,14 @@ pipeline {
         string(name: "docker_tag", defaultValue: "myapp:v1.0.1", trim: true, description: "Docker Image Tag")
         string(name: "sysdig_url", defaultValue: "https://us2.app.sysdig.com", trim: true, description: "Sysdig URL based on Sysdig SaaS region")
         string(name: "registry_url", defaultValue: "ghcr.io/dacesmo", trim: true, description: "Container Registry URL")
-        string(name: "sysdig_args", defaultValue: "", trim: true, description: "Optional args for Sysdig CLI Scanner")
+        string(name: "sysdig_cli_args", defaultValue: "", trim: true, description: "Optional args for Sysdig CLI Scanner")
+        string(name: "plugin_policies_to_apply", defaultValue: "", description: "List of policies to apply (Plugin execution only)")
+        booleanParam(name: 'sysdig_plugin', defaultValue: true, description: 'Want to use Sysdig Plugin? (Plugin execution only)')
+        booleanParam(name: 'bail_on_plugin', defaultValue: true, description: 'Want Sysdig to Bail on Fail? (Plugin execution only)')
+        booleanParam(name: 'bail_on_plugin_fail', defaultValue: true, description: 'Want Sysdig to Bail on Plugin Fail? (Plugin execution only)')
+        
+        
+
     }
     stages {
         stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
@@ -21,26 +28,25 @@ pipeline {
                 sh "git checkout ${git_branch}"
             }
         }
-        /*stage('Lint Docker'){  // This step is recommended to ensure images LABELS standardization
-            steps{
-                sh "apt install -y wget"
-                sh "wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-arm64"
-                sh "chmod 744 hadolint"
-                sh "./hadolint -V Dockerfile"
-            }
-        }*/
         stage('Build image'){  // Builds the image from a Dockerfile
             steps{
                 sh "docker image build --tag jenkins-pipeline/${docker_tag}  --label 'org.opencontainers.image.source=https://github.com/dacesmo/santander-training' . # --label 'stage=PROD'"
             }
         }
-        stage('Sysdig Vulnerability Scan'){  // Scans the built image using Sysdig inline scanner
-            steps{
-                withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
-                    sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
-                    sh 'chmod +x ./sysdig-cli-scanner'
-                    sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_args} jenkins-pipeline/${docker_tag}"
+        stage('Sysdig Vulnerability Scan CLI'){  // Scans the built image using Sysdig inline scanner
+            if (!sysdig_plugin){
+                steps{
+                    withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
+                        sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
+                        sh 'chmod +x ./sysdig-cli-scanner'
+                        sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} jenkins-pipeline/${docker_tag}"
+                    }
                 }
+            }
+        }
+        stage('Sysdig Vulnerability Scan Plugin'){
+            steps{
+                sysdigImageScan engineCredentialsId: 'sysdig_secure_api_token', imageName: "jenkins-pipeline/${params.docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: ${params.bail_on_fail}, bailOnPluginFail: ${params.bail_on_plugin_fail}
             }
         }
         stage('Tag Docker Image'){  // Tags the image to be pushed to the Container Registry
