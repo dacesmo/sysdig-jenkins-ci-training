@@ -33,21 +33,23 @@ pipeline {
                 sh "docker image build --tag jenkins-pipeline/${docker_tag}  --label 'org.opencontainers.image.source=https://github.com/dacesmo/santander-training' . # --label 'stage=PROD'"
             }
         }
-        stage('Sysdig Vulnerability Scan CLI'){  // Scans the built image using Sysdig inline scanner
-            if(!env.sysdig_plugin){    
-                steps{
-                    withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
-                        sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
-                        sh 'chmod +x ./sysdig-cli-scanner'
-                        sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} jenkins-pipeline/${docker_tag}"
+        parallel{
+            stage('Sysdig Vulnerability Scan CLI'){  // Scans the built image using Sysdig inline scanner
+                if(!env.sysdig_plugin){    
+                    steps{
+                        withCredentials([string(credentialsId: 'sysdig_secure_api_token', variable: 'secure_api_token')]) {
+                            sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
+                            sh 'chmod +x ./sysdig-cli-scanner'
+                            sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} jenkins-pipeline/${docker_tag}"
+                        }
                     }
                 }
             }
-        }
-        stage('Sysdig Vulnerability Scan Plugin'){
-            if(env.sysdig_plugin){
-                steps{
-                    sysdigImageScan engineCredentialsId: 'sysdig_secure_api_token', imageName: "jenkins-pipeline/${params.docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: ${params.bail_on_fail}, bailOnPluginFail: ${params.bail_on_plugin_fail}
+            stage('Sysdig Vulnerability Scan Plugin'){
+                if(env.sysdig_plugin){
+                    steps{
+                        sysdigImageScan engineCredentialsId: 'sysdig_secure_api_token', imageName: "jenkins-pipeline/${params.docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: ${params.bail_on_fail}, bailOnPluginFail: ${params.bail_on_plugin_fail}
+                    }
                 }
             }
         }
