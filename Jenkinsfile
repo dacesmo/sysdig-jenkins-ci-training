@@ -28,7 +28,7 @@ pipeline {
         }
         stage('Build image'){  // Builds the image from a Dockerfile
             steps{
-                sh "docker image build --tag ${registry_url}/${registry_repo}/${docker_tag}  --label 'stage=TRAINING' .
+                sh "docker image build --tag ${registry_url}/${registry_repo}/${docker_tag}  --label 'stage=TRAINING' ."
             }
         }
         stage('Sysdig Vulnerability Scan'){
