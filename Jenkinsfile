@@ -27,7 +27,7 @@ pipeline {
         }
         stage('Build image'){  // Builds the image from a Dockerfile
             steps{
-                sh "docker image build --tag jenkins-pipeline/${docker_tag}  --label 'org.opencontainers.image.source=https://github.com/dacesmo/santander-training' . # --label 'stage=PROD'"
+                sh "docker image build --tag jenkins-pipeline/${docker_tag}  --label 'org.opencontainers.image.source=https://github.com/dacesmo/sysdig-jenkins-ci-training' . # --label 'stage=PROD'"
             }
         }
         stage('Sysdig Vulnerability Scan'){
