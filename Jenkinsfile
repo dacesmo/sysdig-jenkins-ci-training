@@ -8,8 +8,8 @@ pipeline {
         string(name: "sysdig_url", defaultValue: "https://us2.app.sysdig.com", trim: true, description: "Sysdig URL based on Sysdig SaaS region")
         booleanParam(name: 'sysdig_plugin', defaultValue: true, description: 'Want to use Sysdig Jenkins Plugin? (Else, cli scanned will be performed)')
         string(name: "plugin_policies_to_apply", defaultValue: "", description: "Space separated list of policies to apply (Plugin execution only)")
-        booleanParam(name: 'bail_on_fail', defaultValue: true, description: 'Want Sysdig to Bail on Fail? (Plugin execution only)')
-        booleanParam(name: 'bail_on_plugin_fail', defaultValue: true, description: 'Want Sysdig to Bail on Plugin Fail? (Plugin execution only)')
+        booleanParam(name: 'bail_on_fail', defaultValue: true, description: 'Want to stop the Pipeline execution if the Scan returns a failed policy evaluation? (Plugin execution only)')
+        booleanParam(name: 'bail_on_plugin_fail', defaultValue: true, description: 'Want to stop the pipeline if the Jenkins Plugin Fails? (Plugin execution only)')
         string(name: "sysdig_cli_args", defaultValue: "", trim: true, description: "Optional inline arguments (Sysdig CLI Scanner Execution only)")
     }
     stages {
