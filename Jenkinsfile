@@ -5,7 +5,7 @@ pipeline {
         string(name: "git_branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
         string(name: "docker_tag", defaultValue: "myapp:v1.0.1", trim: true, description: "Docker Image Tag")
         string(name: "registry_url", defaultValue: "ssworkshop.jfrog.io", trim: true, description: "Container Registry URL")
-        string(name: "registry_repo", defaultValue: "docker", trim: true, description: "Container Registry URL")
+        string(name: "registry_repo", defaultValue: "santander", trim: true, description: "Container Registry URL")
         string(name: "sysdig_url", defaultValue: "https://us2.app.sysdig.com", trim: true, description: "Sysdig URL based on Sysdig SaaS region")
         booleanParam(name: 'sysdig_plugin', defaultValue: true, description: 'Want to use Sysdig Jenkins Plugin? (Else, cli scanned will be performed)')
         string(name: "plugin_policies_to_apply", defaultValue: "", description: "Space separated list of policies to apply (Plugin execution only)")
