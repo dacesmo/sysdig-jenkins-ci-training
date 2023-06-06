@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            cloud 'kubernetes'
+            defaultContainer 'dind'
+        }
+    }
     parameters {  // Defines Parameters as Code
         string(name: "git_repository", defaultValue: "https://github.com/dacesmo/sysdig-jenkins-ci-training.git", trim: true, description: "Git Repo to build Dockerfile from")
         string(name: "git_branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
@@ -14,51 +19,49 @@ pipeline {
         string(name: "sysdig_cli_args", defaultValue: "", trim: true, description: "Optional inline arguments (Sysdig CLI Scanner Execution only)")
     }
     stages {
-        container('dind'){
-            stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
-                steps {
-                    cleanWs()
-                    sh 'rm -rf .git'
-                }
+        stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
+            steps {
+                cleanWs()
+                sh 'rm -rf .git'
             }
-            stage('Clone repo'){  // Clones repo into the working directory
-                steps{
-                    sh "git clone ${git_repository} ."
-                    sh "git checkout ${git_branch}"
-                }
+        }
+        stage('Clone repo'){  // Clones repo into the working directory
+            steps{
+                sh "git clone ${git_repository} ."
+                sh "git checkout ${git_branch}"
             }
-            stage('Build image'){  // Builds the image from a Dockerfile
-                steps{
-                    sh "docker image build --tag ${registry_url}/${registry_repo}/${docker_tag}  --label 'stage=TRAINING' ."
-                }
+        }
+        stage('Build image'){  // Builds the image from a Dockerfile
+            steps{
+                sh "docker image build --tag ${registry_url}/${registry_repo}/${docker_tag}  --label 'stage=TRAINING' ."
             }
-            stage('Sysdig Vulnerability Scan'){
-                parallel{
-                    stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
-                         steps{
-                             script {
-                                 if(!env.sysdig_plugin){    
-                                     withCredentials([usernamePassword(credentialsId: 'sysdig-sa-credentials', passwordVariable: 'secure_api_token')]) {
-                                        sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
-                                        sh 'chmod +x ./sysdig-cli-scanner'
-                                        sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
-                                     }
-                                 }
-                                 else{
-                                    echo 'Using Plugin Scan'
+        }
+        stage('Sysdig Vulnerability Scan'){
+            parallel{
+                stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
+                     steps{
+                         script {
+                             if(!env.sysdig_plugin){    
+                                 withCredentials([usernamePassword(credentialsId: 'sysdig-sa-credentials', passwordVariable: 'secure_api_token')]) {
+                                    sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
+                                    sh 'chmod +x ./sysdig-cli-scanner'
+                                    sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
                                  }
                              }
+                             else{
+                                echo 'Using Plugin Scan'
+                             }
                          }
-                    }
-                    stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
-                        steps{
-                            script{
-                                if(env.sysdig_plugin){
-                                    sysdigImageScan engineCredentialsId: 'sysdig-sa-credentials', imageName: "${registry_url}/${registry_repo}/${docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: "${params.bail_on_fail}", bailOnPluginFail: "${params.bail_on_plugin_fail}"
-                                }
-                                else{
-                                    echo 'Using CLI Scan'
-                                }
+                     }
+                }
+                stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
+                    steps{
+                        script{
+                            if(env.sysdig_plugin){
+                                sysdigImageScan engineCredentialsId: 'sysdig-sa-credentials', imageName: "${registry_url}/${registry_repo}/${docker_tag}", engineURL: "${params.sysdig_url}", policiesToApply: "${params.plugin_policies_to_apply}", bailOnFail: "${params.bail_on_fail}", bailOnPluginFail: "${params.bail_on_plugin_fail}"
+                            }
+                            else{
+                                echo 'Using CLI Scan'
                             }
                         }
                     }
