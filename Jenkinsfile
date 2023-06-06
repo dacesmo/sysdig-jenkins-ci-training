@@ -2,6 +2,7 @@ pipeline {
     agent {
         kubernetes {
             cloud 'kubernetes'
+            inheritFrom 'worker'
             defaultContainer 'dind'
         }
     }
