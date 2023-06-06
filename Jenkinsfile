@@ -20,18 +20,16 @@ pipeline {
         string(name: "sysdig_cli_args", defaultValue: "", trim: true, description: "Optional inline arguments (Sysdig CLI Scanner Execution only)")
     }
     stages {
-        /*stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
+        stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
             steps {
                 cleanWs()
                 sh 'rm -rf .git'
             }
-        }*/
+        }
         stage('Clone repo'){  // Clones repo into the working directory
             steps{
-                container ('git'){
-                    sh "git clone ${git_repository} ."
-                    sh "git checkout ${git_branch}"
-                }
+                sh "git clone ${git_repository} ."
+                sh "git checkout ${git_branch}"
             }
         }
         stage('Build image'){  // Builds the image from a Dockerfile
