@@ -1,11 +1,11 @@
 pipeline {
-    agent {
+    agent any
+    /*{
         kubernetes {
             cloud 'kubernetes'
             inheritFrom 'worker'
-            defaultContainer 'dind'
         }
-    }
+    }*/
     parameters {  // Defines Parameters as Code
         string(name: "git_repository", defaultValue: "https://github.com/dacesmo/sysdig-jenkins-ci-training.git", trim: true, description: "Git Repo to build Dockerfile from")
         string(name: "git_branch", defaultValue: "main", trim: true, description: "Git branch to build Dockerfile from")
