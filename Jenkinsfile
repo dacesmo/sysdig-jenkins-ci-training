@@ -29,7 +29,7 @@ pipeline {
         stage('Clone repo'){  // Clones repo into the working directory
             steps{
                 sh "git clone ${git_repository} ."
-                sh "git config --global --add safe.directory $(pwd)"
+                sh "git config --global --add safe.directory ."
                 sh "git checkout ${git_branch}"
             }
         }
