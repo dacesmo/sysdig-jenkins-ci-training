@@ -27,8 +27,8 @@ pipeline {
             }
         }*/
         stage('Clone repo'){  // Clones repo into the working directory
-            container ('git'){
-                steps{
+            steps{
+                container ('git'){
                     sh "git clone ${git_repository} ."
                     sh "git checkout ${git_branch}"
                 }
