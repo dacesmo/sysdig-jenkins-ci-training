@@ -22,6 +22,7 @@ pipeline {
     stages {
         stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
             steps {
+                sh 'ls -la'
                 cleanWs()
                 sh 'rm -rf .git'
             }
@@ -29,7 +30,7 @@ pipeline {
         stage('Clone repo'){  // Clones repo into the working directory
             steps{
                 sh "git clone ${git_repository} ."
-                sh "git config --global --add safe.directory ."
+                sh 'git config --global --add safe.directory $(pwd)'
                 sh "git checkout ${git_branch}"
             }
         }
