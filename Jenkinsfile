@@ -48,7 +48,7 @@ pipeline {
         stage('Build image'){  // Builds the image from a Dockerfile
             steps{
                 sh "docker image build --tag ${registry_url}/${registry_repo}/${docker_tag}  --label 'stage=TRAINING' ."
-                sh 'sleep 5m'
+                // sh 'sleep 5m'
             }
         }
         stage('Sysdig Vulnerability Scan'){
@@ -56,16 +56,17 @@ pipeline {
                 stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
                      steps{
                          script {
-                             if(!env.sysdig_plugin){
+                             //if(!env.sysdig_plugin){
                                  withCredentials([usernamePassword(credentialsId: 'sysdig-sa-credentials', passwordVariable: 'secure_api_token')]) {
+                                    sh 'apk add curl'
                                     sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
                                     sh 'chmod +x ./sysdig-cli-scanner'
                                     sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
                                  }
-                             }
-                             else{
+                            // }
+                           /*  else{
                                 echo 'Using Plugin Scan'
-                             }
+                             }*/
                          }
                      }
                 }
