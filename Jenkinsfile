@@ -27,8 +27,10 @@ pipeline {
                 sh 'ls -la'
                 cleanWs()
                 sh 'rm -rf .git'
-                if(env.debug_stop){
-                    sh 'sleep 10m'
+                script {
+                    if(env.debug_stop){
+                        sh 'sleep 10m'
+                    }
                 }
             }
         }
