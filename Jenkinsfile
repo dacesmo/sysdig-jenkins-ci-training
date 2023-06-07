@@ -27,7 +27,7 @@ pipeline {
                 sh 'ls -la'
                 cleanWs()
                 sh 'rm -rf .git'
-                script {
+                /*script {
                     if(env.debug_stop){
                         echo 'Debug mode on'
                         sh 'sleep 10m'
@@ -35,7 +35,7 @@ pipeline {
                     else{
                         echo 'Debug mode off'
                     }
-                }
+                }*/
             }
         }
         stage('Clone repo'){  // Clones repo into the working directory
