@@ -55,7 +55,7 @@ pipeline {
             parallel{
                 stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
                      steps{
-                         script {
+                         //script {
                              //if(!env.sysdig_plugin){
                                  withCredentials([usernamePassword(credentialsId: 'sysdig-sa-credentials', passwordVariable: 'secure_api_token')]) {
                                     sh 'apk add curl'
@@ -67,7 +67,7 @@ pipeline {
                            /*  else{
                                 echo 'Using Plugin Scan'
                              }*/
-                         }
+                         }//
                      }
                 }
                 stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
