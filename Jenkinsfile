@@ -67,7 +67,7 @@ pipeline {
                            /*  else{
                                 echo 'Using Plugin Scan'
                              }*/
-                         }//
+                         //}
                      }
                 }
                 stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
