@@ -18,6 +18,8 @@ pipeline {
         booleanParam(name: 'bail_on_fail', defaultValue: true, description: 'Want to stop the Pipeline execution if the Scan returns a failed policy evaluation? (Plugin execution only)')
         booleanParam(name: 'bail_on_plugin_fail', defaultValue: true, description: 'Want to stop the pipeline if the Jenkins Plugin Fails? (Plugin execution only)')
         string(name: "sysdig_cli_args", defaultValue: "", trim: true, description: "Optional inline arguments (Sysdig CLI Scanner Execution only)")
+        booleanParam(name: 'debug_stop', defaultValue: false, description: 'Want to stop pipeline execution and keep pod alive for troubleshooting?')
+        
     }
     stages {
         stage('Clean Workspace') {  // Cleans the workspace to avoid old files conflicts
@@ -25,6 +27,9 @@ pipeline {
                 sh 'ls -la'
                 cleanWs()
                 sh 'rm -rf .git'
+                if(env.debug_stop){
+                    sh 'sleep 10m'
+                }
             }
         }
         stage('Clone repo'){  // Clones repo into the working directory
