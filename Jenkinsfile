@@ -52,8 +52,8 @@ pipeline {
             }
         }
         stage('Sysdig Vulnerability Scan'){
-            parallel{
-                stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
+           // parallel{
+                //stage('CLI Scan'){  // Scans the built image using Sysdig inline scanner
                      steps{
                          //script {
                              //if(!env.sysdig_plugin){
@@ -69,8 +69,8 @@ pipeline {
                              }*/
                          //}
                      }
-                }
-                stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
+               // }
+             /*   stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
                     steps{
                         script{
                             if(env.sysdig_plugin){
@@ -81,8 +81,8 @@ pipeline {
                             }
                         }
                     }
-                }
-            }
+                }*/
+            //}
         }
         stage('Push Docker Image'){  // Pushes the images to the Container Registry
             steps{
