@@ -66,7 +66,7 @@ pipeline {
                             if(env.sysdig_plugin){
                                 withCredentials([usernamePassword(credentialsId: 'sysdig-sa-credentials', passwordVariable: 'SECURE_API_TOKEN', usernameVariable: 'completelyUselessVar')]) {
                                     sh "echo $SECURE_API_TOKEN ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag} policies:${plugin_policies_to_apply} bail:${bail_on_fail} pluginBail:${bail_on_plugin_fail}"
-                                    sysdigImageScan engineCredentialsId: 'sysdig-sa-credentials', imageName: "${registry_url}/${registry_repo}/${docker_tag}", engineURL: "${sysdig_url}", policiesToApply: "${plugin_policies_to_apply}", bailOnFail: "${bail_on_fail}", bailOnPluginFail: "${bail_on_plugin_fail}"
+                                    sysdigImageScan engineCredentialsId: 'sysdig-sa-credentials', imageName: "${registry_url}/${registry_repo}/${docker_tag}", engineURL: "${sysdig_url}", policiesToApply: "${plugin_policies_to_apply}", bailOnFail: "${bail_on_fail}", bailOnPluginFail: "${bail_on_plugin_fail}", debug: true
                                 }
                             }
                             else{
