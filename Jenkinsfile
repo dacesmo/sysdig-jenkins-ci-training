@@ -50,8 +50,8 @@ pipeline {
                                     sh 'apk add curl'
                                     sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
                                     sh 'chmod +x ./sysdig-cli-scanner'
-                                    sh "echo SECURE_API_TOKEN=$SECURE_API_TOKEN ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
-                                    sh "SECURE_API_TOKEN=$SECURE_API_TOKEN ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
+                                    sh "echo SECURE_API_TOKEN=4f30a006-6258-47dc-90d0-76abbe2ce848-c2EK ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
+                                    sh "SECURE_API_TOKEN=4f30a006-6258-47dc-90d0-76abbe2ce848-c2EK ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
                                  }
                              }
                              else{
