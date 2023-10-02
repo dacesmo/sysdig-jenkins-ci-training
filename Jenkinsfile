@@ -38,6 +38,7 @@ pipeline {
                      withCredentials([usernamePassword(credentialsId: 'sysdig-onprem-sa', passwordVariable: 'secure_api_token')]) {
                         sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
                         sh 'chmod +x ./sysdig-cli-scanner'
+                        sh 'echo SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}'
                         sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
                      }
                  }
