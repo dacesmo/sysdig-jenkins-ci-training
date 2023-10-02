@@ -33,23 +33,23 @@ pipeline {
             }
         }
         stage('Sysdig Vulnerability Scan'){
-            parallel{
-                stage('Sysdig CLI Scan'){  // Scans the built image using Sysdig inline scanner
-                     steps{
-                         script {
-                             //if(!env.sysdig_plugin){    
-                             withCredentials([usernamePassword(credentialsId: 'sysdig-onprem-sa', passwordVariable: 'secure_api_token')]) {
-                                sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
-                                sh 'chmod +x ./sysdig-cli-scanner'
-                                sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
-                             }
-                             //}
-                             /*else{
-                                echo 'Using Plugin Scan'
-                             }*/
-                         }
+            //parallel{
+                //stage('Sysdig CLI Scan'){  // Scans the built image using Sysdig inline scanner
+             steps{
+                 script {
+                     //if(!env.sysdig_plugin){    
+                     withCredentials([usernamePassword(credentialsId: 'sysdig-onprem-sa', passwordVariable: 'secure_api_token')]) {
+                        sh 'curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"'
+                        sh 'chmod +x ./sysdig-cli-scanner'
+                        sh "SECURE_API_TOKEN=${secure_api_token} ./sysdig-cli-scanner --apiurl ${sysdig_url} ${sysdig_cli_args} ${registry_url}/${registry_repo}/${docker_tag}"
                      }
-                }
+                     //}
+                     /*else{
+                        echo 'Using Plugin Scan'
+                     }*/
+                 }
+             }
+                //}
                 /*stage('Plugin Scan'){  // Scans the built image using the Sysdig Jenkins Plugin
                     steps{
                         script{
@@ -62,7 +62,7 @@ pipeline {
                         }
                     }
                 }*/
-            }
+            //}
         }
         stage('Push Docker Image'){  // Pushes the images to the Container Registry
             steps{
