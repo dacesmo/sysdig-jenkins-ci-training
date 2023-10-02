@@ -11,7 +11,7 @@ pipeline {
         string(name: "plugin_policies_to_apply", defaultValue: "", description: "Space separated list of policies to apply (Plugin execution only)")
         booleanParam(name: 'bail_on_fail', defaultValue: true, description: 'Want to stop the Pipeline execution if the Scan returns a failed policy evaluation? (Plugin execution only)')
         booleanParam(name: 'bail_on_plugin_fail', defaultValue: true, description: 'Want to stop the pipeline if the Jenkins Plugin Fails? (Plugin execution only)')
-        booleanParam(name: 'engine_verify', defaultValue: false, description: 'Want to verify the SSL Certificate for the Jenkins Instance? (Plugin execution only - OnPrem Recommendation if SSL is self-signed)')
+        booleanParam(name: 'engine_verify', defaultValue: false, description: 'Want to verify the SSL Certificate for the Jenkins Instance? (Plugin execution only - OnPrem Recommendation if SSL is self-signed is set to false)')
         string(name: "sysdig_cli_args", defaultValue: "--skiptlsverify", trim: true, description: "Optional inline arguments (Sysdig CLI Scanner Execution only)")
 
     }
